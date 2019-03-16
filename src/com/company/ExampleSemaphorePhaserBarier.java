@@ -5,20 +5,20 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.Semaphore;
 
-public class exampleSemaphorePhaserBarier implements Runnable {
+public class ExampleSemaphorePhaserBarier implements Runnable {
     Semaphore semaphore = null;
     CyclicBarrier cyclicBarrier = null;
     Phaser phaser = null;
 
-    public exampleSemaphorePhaserBarier(Semaphore semaphore) {
+    public ExampleSemaphorePhaserBarier(Semaphore semaphore) {
         this.semaphore = semaphore;
     }
 
-    public exampleSemaphorePhaserBarier(CyclicBarrier cyclicBarrier) {
+    public ExampleSemaphorePhaserBarier(CyclicBarrier cyclicBarrier) {
         this.cyclicBarrier = cyclicBarrier;
     }
 
-    public exampleSemaphorePhaserBarier(Phaser phaser) {
+    public ExampleSemaphorePhaserBarier(Phaser phaser) {
         this.phaser = phaser;
     }
 

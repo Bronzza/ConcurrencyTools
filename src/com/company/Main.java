@@ -94,7 +94,7 @@ public class Main {
         if (name.getDescription().equals("semafor")) {
             Semaphore semaphore = new Semaphore(3);
             for (int i = 0; i < treadsNumber; i++) {
-                threads[i] = new Thread(new exampleSemaphorePhaserBarier(semaphore));
+                threads[i] = new Thread(new ExampleSemaphorePhaserBarier(semaphore));
                 threads[i].start();
             }
         }
@@ -109,7 +109,7 @@ public class Main {
             });
 
             for (int i = 0; i < treadsNumber; i++) {
-                threads[i] = new Thread(new exampleSemaphorePhaserBarier(barrier));
+                threads[i] = new Thread(new ExampleSemaphorePhaserBarier(barrier));
                 try {
                     Thread.sleep(600);
                 } catch (InterruptedException e) {
@@ -120,7 +120,7 @@ public class Main {
         } else if (name.getDescription().equals("phaser")) {
             Phaser phaser = new Phaser(3);
             for (int i = 0; i < treadsNumber; i++) {
-                threads[i] = new Thread(new exampleSemaphorePhaserBarier(phaser));
+                threads[i] = new Thread(new ExampleSemaphorePhaserBarier(phaser));
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
