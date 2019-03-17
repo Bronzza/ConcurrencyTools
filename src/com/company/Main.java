@@ -26,7 +26,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Main {
 
     public static void main(String[] args) {
-        concurrentPresenttion(Presentations.QUEUE, 10);
+        concurrentPresentation(Presentations.PHASER, 10);
         MySingleTone singleTone = MySingleTone.getInstance();
         MySingleTone secondInstance = SingleToneCreator.createMySingleTones();
         System.out.println(singleTone == secondInstance);
@@ -122,19 +122,22 @@ public class Main {
     private static void semaforPresentation(Presentations name) {
         int treadsNumber = 9;
         Thread[] threads = new Thread[treadsNumber];
-        if (name.getDescription().equals("semafor")) {
-            Semaphore semaphore = new Semaphore(3);
-            treadStarter(new ExampleSemaphorePhaserBarier(semaphore), treadsNumber);
-        }
-        if (name.getDescription().equals("barier")) {
-            CyclicBarrier barrier = new CyclicBarrier(3, () -> {
-                System.out.println("Barrier is opened");
-                ThreadSleaper.threadSleeper(800);
-            });
-            treadStarter(new ExampleSemaphorePhaserBarier(barrier), treadsNumber, 800);
-        } else if (name.getDescription().equals("phaser")) {
-            Phaser phaser = new Phaser(3);
-            treadStarter(new ExampleSemaphorePhaserBarier(phaser), treadsNumber, 800);
+        switch (name) {
+            case SEMAFOR:
+                Semaphore semaphore = new Semaphore(3);
+                treadStarter(new ExampleSemaphorePhaserBarier(semaphore), treadsNumber);
+                break;
+            case BARIER:
+                CyclicBarrier barrier = new CyclicBarrier(3, () -> {
+                    System.out.println("Barrier is opened");
+                    ThreadSleaper.threadSleeper(700);
+                });
+                treadStarter(new ExampleSemaphorePhaserBarier(barrier), treadsNumber, 700);
+                break;
+            case PHASER:
+                Phaser phaser = new Phaser(3);
+                treadStarter(new ExampleSemaphorePhaserBarier(phaser), treadsNumber, 700);
+                break;
         }
     }
 
@@ -146,7 +149,7 @@ public class Main {
         }
     }
 
-    public static void concurrentPresenttion(Presentations name, int numberOfThreads) {
+    public static void concurrentPresentation(Presentations name, int numberOfThreads) {
         switch (name) {
             case LIST:
                 listPresentation(numberOfThreads);
