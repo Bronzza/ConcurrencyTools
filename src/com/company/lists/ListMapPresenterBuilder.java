@@ -1,4 +1,4 @@
-package com.company.lists.listMapBuilder;
+package com.company.lists;
 
 import java.util.List;
 import java.util.Map;

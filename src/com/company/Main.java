@@ -1,10 +1,12 @@
 package com.company;
 
 
-import com.company.lists.listMapBuilder.AtomicIntRealizator;
-import com.company.lists.listMapBuilder.ListMapConcurrentClass;
-import com.company.lists.listMapBuilder.ListRealisator;
-import com.company.lists.listMapBuilder.MapRealisator;
+import com.company.lists.AtomicIntRealizator;
+import com.company.lists.ListMapConcurrentClass;
+import com.company.lists.ListRealisator;
+import com.company.lists.MapRealisator;
+import com.company.singleTones.MySingleTone;
+import com.company.singleTones.SingleToneCreator;
 
 
 import java.util.ArrayList;
@@ -26,8 +28,9 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Main {
 
     public static void main(String[] args) {
-        listPresentation(10);
-        semaforPresentation(Presentations.SEMAFOR);
+        MySingleTone singleTone = MySingleTone.getInstance();
+        MySingleTone secondInstance = SingleToneCreator.createMySingleTones();
+        System.out.println(singleTone == secondInstance);
     }
 
     static public void listPresentation(int howManyThreads) {
