@@ -7,7 +7,8 @@ public enum Presentations {
     LIST("list"),
     MAP("map"),
     LOCK("lock"),
-    INTEGER("atomic");
+    INTEGER("atomic"),
+    QUEUE("queue");
 
     private String description;
 

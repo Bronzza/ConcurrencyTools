@@ -26,7 +26,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Main {
 
     public static void main(String[] args) {
-        concurrentPresenttion(Presentations.INTEGER, 10);
+        concurrentPresenttion(Presentations.QUEUE, 10);
         MySingleTone singleTone = MySingleTone.getInstance();
         MySingleTone secondInstance = SingleToneCreator.createMySingleTones();
         System.out.println(singleTone == secondInstance);
@@ -87,17 +87,16 @@ public class Main {
                 + presentationClass.getAtomicInteger());
     }
 
-    static private void cuncurrentQueuePresentation() {
-        int numbThreads = 10;
+    static private void cuncurrentQueuePresentation(int numbOfThreads) {
         int counter = 2000;
         Queue<Integer> queue = new ArrayDeque<>();
         ConcurrentLinkedQueue<Integer> concurQueue = new ConcurrentLinkedQueue<>();
 
-        treadStarter(new QueueClassConcurrent(queue, concurQueue, counter), numbThreads);
+        treadStarter(new QueueClassConcurrent(queue, concurQueue, counter), numbOfThreads);
         ThreadSleaper.threadSleeper(2000);
 
-        System.out.println("Concurrent not save (expected " + counter * numbThreads + "): " + queue.size());
-        System.out.println("Concurrent save (expected " + counter * numbThreads + "): " + concurQueue.size());
+        System.out.println("Concurrent not save (expected " + counter * numbOfThreads + "): " + queue.size());
+        System.out.println("Concurrent save (expected " + counter * numbOfThreads + "): " + concurQueue.size());
     }
 
     private static void lockPresentation(int howManyThreads) {
@@ -169,6 +168,9 @@ public class Main {
                 break;
             case INTEGER:
                 atomicIntPresentation(numberOfThreads);
+                break;
+            case QUEUE:
+                cuncurrentQueuePresentation(numberOfThreads);
                 break;
         }
     }
