@@ -1,53 +1,88 @@
 package com.company;
 
 
-import java.util.*;
+import com.company.lists.listMapBuilder.AtomicIntRealizator;
+import com.company.lists.listMapBuilder.ListMapConcurrentClass;
+import com.company.lists.listMapBuilder.ListRealisator;
+import com.company.lists.listMapBuilder.MapRealisator;
+
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayDeque;
+import java.util.Queue;
+
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Main {
 
     public static void main(String[] args) {
-        Main.listMapPresentation();
-        Main.cuncurrentQueuePresentation();
-//        Main.lockPresentation();
-//        semaforPresentation(Presentations.BARIER);
-//        semaforPresentation(Presentations.PHASER);
-//        semaforPresentation(Presentations.SEMAFOR);
+        listPresentation(10);
+        semaforPresentation(Presentations.SEMAFOR);
     }
 
-    static public void listMapPresentation()  {
-        Object o = new Object();
-        int numbThreads = 10;
+    static public void listPresentation(int howManyThreads) {
         int counter = 5000;
-        List<Integer> normalList = new LinkedList<>();
+        List<Integer> normalList = new ArrayList<>();
         CopyOnWriteArrayList<Integer> concurentSafeList = new CopyOnWriteArrayList<>();
-        Map<Integer, Integer> normalMap = new HashMap<>();
-        Map<Integer, Integer> concurSafeMap = new ConcurrentHashMap<>();
+        ListRealisator listRealisator = new ListRealisator();
+        ListMapConcurrentClass presentationClass = listRealisator
+                .setListNormal(normalList)
+                .setListSynchronized(concurentSafeList)
+                .setCounter(counter)
+                .build();
 
-        Thread[] arrayThread = new Thread[numbThreads];
+        treadStarter(presentationClass, howManyThreads);
+        ThreadSleaper.threadSleeper(2000);
 
-        for (int i = 0; i < numbThreads; i++) {
-            arrayThread[i] = new Thread(new ListMapConcurrentClass(concurentSafeList, normalList, normalMap,
-                    concurSafeMap, counter));
-            arrayThread[i].start();
-        }
-       ThreadSleaper.threadSleeper(2000);
-        System.out.println("Concurrent NOT save collection(expected " + counter * numbThreads + "): "
+        System.out.println("Concurrent NOT save collection(expected " + counter * howManyThreads + "): "
                 + normalList.size());
-        System.out.println("Concurrent save collection (expected" + counter * numbThreads + "): "
+        System.out.println("Concurrent save collection (expected " + counter * howManyThreads + "): "
                 + concurentSafeList.size() + "\n");
+    }
+
+    static public void mapPresentation(int howManyThreads) {
+        int counter = 5000;
+        Map<Integer, Integer> normalMap = new HashMap<>();
+        ConcurrentHashMap<Integer, Integer> concurSafeMap = new ConcurrentHashMap<>();
+        MapRealisator listRealisator = new MapRealisator();
+        ListMapConcurrentClass presentationClass = listRealisator
+                .setListMap(normalMap)
+                .setMapSynchronized(concurSafeMap)
+                .setCounter(counter)
+                .build();
+
+        treadStarter(presentationClass, howManyThreads);
+        ThreadSleaper.threadSleeper(2000);
+
         System.out.println("Concurrent NOT save MAP(expected " + counter + "): " + normalMap.size());
         System.out.println("Concurrent  save  MAP(expected " + counter + "): " + concurSafeMap.size() + "\n");
-        System.out.println("Concurrent  NOT save int (expected " + counter * numbThreads + "): "
-                + new ListMapConcurrentClass().getResult());
-        System.out.println("Concurrent  save (expected " + counter * numbThreads + "): "
-                + new ListMapConcurrentClass().getAtomicInteger());
+    }
+
+    static public void atomicIntPresentation(int howManyThreads) {
+        int counter = 5000;
+        AtomicIntRealizator atomicIntRealizator = new AtomicIntRealizator();
+        ListMapConcurrentClass presentationClass = atomicIntRealizator
+                .setAtomicInteger(new AtomicInteger(0))
+                .setCounter(counter)
+                .build();
+
+        treadStarter(presentationClass, howManyThreads);
+        ThreadSleaper.threadSleeper(2000);
+
+        System.out.println("Concurrent  NOT save int (expected " + counter * howManyThreads + "): "
+                + presentationClass.getResult());
+        System.out.println("Concurrent  save (expected " + counter * howManyThreads + "): "
+                + presentationClass.getAtomicInteger());
     }
 
     static void cuncurrentQueuePresentation() {
@@ -56,13 +91,9 @@ public class Main {
         Queue<Integer> queue = new ArrayDeque<>();
         ConcurrentLinkedQueue<Integer> concurQueue = new ConcurrentLinkedQueue<>();
 
-        Thread[] arrayThread = new Thread[numbThreads];
-
-        for (int i = 0; i < numbThreads; i++) {
-            arrayThread[i] = new Thread(new QueueClassConcurrent(queue, concurQueue, counter));
-            arrayThread[i].start();
-        }
+        treadStarter(new QueueClassConcurrent(queue, concurQueue, counter), numbThreads);
         ThreadSleaper.threadSleeper(2000);
+
         System.out.println("Concurrent not save (expected " + counter * numbThreads + "): " + queue.size());
         System.out.println("Concurrent save (expected " + counter * numbThreads + "): " + concurQueue.size());
     }
@@ -73,22 +104,17 @@ public class Main {
         int counter = 3000;
 
         List<Integer> list = new ArrayList<>();
-        List <Integer> list1 = new ArrayList<>();
+        List<Integer> list1 = new ArrayList<>();
+        Runnable interfaceRunnable = () -> {
+            for (int j = 0; j < counter; j++) {
+                list1.add(1);
+            }
+        };
 
-        Thread[] arrayThread = new Thread[numbThreads];
-        Thread[] arrayThread2 = new Thread[numbThreads];
-
-        for (int i = 0; i < numbThreads; i++) {
-            arrayThread[i] = new Thread(new LockPresentation(list, lock, counter));
-            arrayThread[i].start();
-            arrayThread2[i] = new Thread(() ->{
-                for (int j = 0; j < counter; j++) {
-                    list1.add(1);
-                }
-            });
-            arrayThread2[i].start();
-        }
+        treadStarter(new LockPresentation(list, lock, counter), 10);
+        treadStarter(interfaceRunnable, 10);
         ThreadSleaper.threadSleeper(2000);
+
         System.out.println("Concurrent NOT save (expected " + counter * numbThreads + "): " + list1.size());
         System.out.println("Concurrent save (expected " + counter * numbThreads + "): " + list.size());
     }
@@ -98,29 +124,34 @@ public class Main {
         Thread[] threads = new Thread[treadsNumber];
         if (name.getDescription().equals("semafor")) {
             Semaphore semaphore = new Semaphore(3);
-            for (int i = 0; i < treadsNumber; i++) {
-                threads[i] = new Thread(new ExampleSemaphorePhaserBarier(semaphore));
-                threads[i].start();
-            }
+            treadStarter(new ExampleSemaphorePhaserBarier(semaphore), treadsNumber);
         }
         if (name.getDescription().equals("barier")) {
             CyclicBarrier barrier = new CyclicBarrier(3, () -> {
                 System.out.println("Barrier is opened");
                 ThreadSleaper.threadSleeper(800);
             });
-
-            for (int i = 0; i < treadsNumber; i++) {
-                threads[i] = new Thread(new ExampleSemaphorePhaserBarier(barrier));
-                ThreadSleaper.threadSleeper(500);
-                threads[i].start();
-            }
+            treadStarter(new ExampleSemaphorePhaserBarier(barrier), treadsNumber, 800);
         } else if (name.getDescription().equals("phaser")) {
             Phaser phaser = new Phaser(3);
-            for (int i = 0; i < treadsNumber; i++) {
-                threads[i] = new Thread(new ExampleSemaphorePhaserBarier(phaser));
-                ThreadSleaper.threadSleeper(800);
-                threads[i].start();
-            }
+            treadStarter(new ExampleSemaphorePhaserBarier(phaser), treadsNumber, 800);
+        }
+    }
+
+    static private void treadStarter(Runnable runnable, int numberOfThreads) {
+        Thread[] resultArray = new Thread[numberOfThreads];
+        for (int i = 0; i < numberOfThreads; i++) {
+            resultArray[i] = new Thread(runnable);
+            resultArray[i].start();
+        }
+    }
+
+    static private void treadStarter(Runnable runnable, int numberOfThreads, int delayMillis) {
+        Thread[] resultArray = new Thread[numberOfThreads];
+        for (int i = 0; i < numberOfThreads; i++) {
+            resultArray[i] = new Thread(runnable);
+            ThreadSleaper.threadSleeper(delayMillis);
+            resultArray[i].start();
         }
     }
 }
