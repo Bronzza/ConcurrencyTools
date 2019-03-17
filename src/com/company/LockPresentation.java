@@ -5,8 +5,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class LockPresentation implements Runnable {
     private List innerList;
-    ReentrantLock lock;
-    int counter;
+    private ReentrantLock lock;
+    private int counter;
 
     public LockPresentation(List innerList, ReentrantLock lock, int counter) {
         this.innerList = innerList;
@@ -16,15 +16,18 @@ public class LockPresentation implements Runnable {
 
     @Override
     public void run() {
-        if (lock != null) {
-            lock.lock();
-        }
-        for (int i = 0; i < counter; i++) {
-            innerList.add(i);
-        }
-        if (lock != null && lock.isLocked()) {
-            System.out.println(Thread.currentThread().getName() + " finished");
-            lock.unlock();
+        try {
+            if (lock != null) {
+                lock.lock();
+            }
+            for (int i = 0; i < counter; i++) {
+                innerList.add(i);
+            }
+        } finally {
+            if (lock != null) {
+                System.out.println(Thread.currentThread().getName() + " finished");
+                lock.unlock();
+            }
         }
     }
 }

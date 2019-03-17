@@ -17,7 +17,8 @@ public class ListMapConcurrentClass implements Runnable {
     public ListMapConcurrentClass() {
     }
 
-    public ListMapConcurrentClass(CopyOnWriteArrayList listSynchro, List innerList, Map mapNormal, Map mapSyncronised, int counter) {
+    public ListMapConcurrentClass(CopyOnWriteArrayList listSynchro, List innerList,
+                                  Map mapNormal, Map mapSyncronised, int counter) {
         innerListSyncronised = listSynchro;
         this.innerList = innerList;
         innerMap = mapNormal;

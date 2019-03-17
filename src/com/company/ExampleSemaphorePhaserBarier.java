@@ -6,9 +6,9 @@ import java.util.concurrent.Phaser;
 import java.util.concurrent.Semaphore;
 
 public class ExampleSemaphorePhaserBarier implements Runnable {
-    Semaphore semaphore = null;
-    CyclicBarrier cyclicBarrier = null;
-    Phaser phaser = null;
+    private Semaphore semaphore = null;
+    private CyclicBarrier cyclicBarrier = null;
+    private Phaser phaser = null;
 
     public ExampleSemaphorePhaserBarier(Semaphore semaphore) {
         this.semaphore = semaphore;
@@ -22,39 +22,47 @@ public class ExampleSemaphorePhaserBarier implements Runnable {
         this.phaser = phaser;
     }
 
+    private void semaphorePresent() {
+        try {
+            System.out.println(Thread.currentThread().getName() + " is ready to work");
+            semaphore.acquire();
+            System.out.println(Thread.currentThread().getName() + " is working");
+            ThreadSleaper.threadSleeper(800);
+            System.out.println(Thread.currentThread().getName() + " just finished");
+            semaphore.release();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void barierPresent() {
+        try {
+            System.out.println(Thread.currentThread().getName() + " come to barrier");
+            cyclicBarrier.await();
+            System.out.println(Thread.currentThread().getName() + " passed barrier");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void phaserPresent() {
+        System.out.println(Thread.currentThread().getName() + " is ready to work");
+        phaser.arriveAndAwaitAdvance();
+        System.out.println(Thread.currentThread().getName() + " is working");
+        ThreadSleaper.threadSleeper(800);
+        System.out.println(Thread.currentThread().getName() + " just finished");
+    }
+
     @Override
     public void run() {
-        if (semaphore != null) {
-            try {
-                System.out.println(Thread.currentThread().getName() + " is ready to work");
-                semaphore.acquire();
-                System.out.println(Thread.currentThread().getName() + " is working");
-                Thread.sleep(900);
-                System.out.println(Thread.currentThread().getName() + " just finished");
-                semaphore.release();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        if (phaser != null) {
+            phaserPresent();
         } else if (cyclicBarrier != null) {
-            System.out.println(Thread.currentThread().getName() + " come to barrier");
-            try {
-                cyclicBarrier.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (BrokenBarrierException e) {
-                e.printStackTrace();
-            }
-            System.out.println(Thread.currentThread().getName() + " passed barrier");
-        } else if (phaser != null) {
-            System.out.println(Thread.currentThread().getName() + " is ready to work");
-            phaser.arriveAndAwaitAdvance();
-            System.out.println(Thread.currentThread().getName() + " is working");
-            try {
-                Thread.sleep(600);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.out.println(Thread.currentThread().getName() + " just finished");
+            barierPresent();
+        } else if (semaphore != null) {
+            semaphorePresent();
         }
     }
 }
