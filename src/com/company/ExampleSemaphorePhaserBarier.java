@@ -40,9 +40,7 @@ public class ExampleSemaphorePhaserBarier implements Runnable {
             System.out.println(Thread.currentThread().getName() + " come to barrier");
             cyclicBarrier.await();
             System.out.println(Thread.currentThread().getName() + " passed barrier");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (BrokenBarrierException e) {
+        } catch (InterruptedException | BrokenBarrierException e) {
             e.printStackTrace();
         }
     }

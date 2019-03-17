@@ -1,9 +1,13 @@
 package com.company;
 
 public enum Presentations {
-    SEMAFOR ("semafor"),
+    SEMAFOR("semafor"),
     BARIER("barier"),
-    PHASER("phaser");
+    PHASER("phaser"),
+    LIST("list"),
+    MAP("map"),
+    LOCK("lock"),
+    INTEGER("atomic");
 
     private String description;
 

@@ -1,13 +1,11 @@
 package com.company;
 
-
 import com.company.lists.AtomicIntRealizator;
 import com.company.lists.ListMapConcurrentClass;
 import com.company.lists.ListRealisator;
 import com.company.lists.MapRealisator;
 import com.company.singleTones.MySingleTone;
 import com.company.singleTones.SingleToneCreator;
-
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,12 +26,13 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Main {
 
     public static void main(String[] args) {
+        concurrentPresenttion(Presentations.INTEGER, 10);
         MySingleTone singleTone = MySingleTone.getInstance();
         MySingleTone secondInstance = SingleToneCreator.createMySingleTones();
         System.out.println(singleTone == secondInstance);
     }
 
-    static public void listPresentation(int howManyThreads) {
+    private static void listPresentation(int howManyThreads) {
         int counter = 5000;
         List<Integer> normalList = new ArrayList<>();
         CopyOnWriteArrayList<Integer> concurentSafeList = new CopyOnWriteArrayList<>();
@@ -53,7 +52,7 @@ public class Main {
                 + concurentSafeList.size() + "\n");
     }
 
-    static public void mapPresentation(int howManyThreads) {
+    private static void mapPresentation(int howManyThreads) {
         int counter = 5000;
         Map<Integer, Integer> normalMap = new HashMap<>();
         ConcurrentHashMap<Integer, Integer> concurSafeMap = new ConcurrentHashMap<>();
@@ -71,7 +70,7 @@ public class Main {
         System.out.println("Concurrent  save  MAP(expected " + counter + "): " + concurSafeMap.size() + "\n");
     }
 
-    static public void atomicIntPresentation(int howManyThreads) {
+    private static void atomicIntPresentation(int howManyThreads) {
         int counter = 5000;
         AtomicIntRealizator atomicIntRealizator = new AtomicIntRealizator();
         ListMapConcurrentClass presentationClass = atomicIntRealizator
@@ -88,7 +87,7 @@ public class Main {
                 + presentationClass.getAtomicInteger());
     }
 
-    static void cuncurrentQueuePresentation() {
+    static private void cuncurrentQueuePresentation() {
         int numbThreads = 10;
         int counter = 2000;
         Queue<Integer> queue = new ArrayDeque<>();
@@ -101,9 +100,8 @@ public class Main {
         System.out.println("Concurrent save (expected " + counter * numbThreads + "): " + concurQueue.size());
     }
 
-    public static void lockPresentation() {
+    private static void lockPresentation(int howManyThreads) {
         ReentrantLock lock = new ReentrantLock();
-        int numbThreads = 10;
         int counter = 3000;
 
         List<Integer> list = new ArrayList<>();
@@ -114,15 +112,15 @@ public class Main {
             }
         };
 
-        treadStarter(new LockPresentation(list, lock, counter), 10);
-        treadStarter(interfaceRunnable, 10);
+        treadStarter(new LockPresentation(list, lock, counter), howManyThreads);
+        treadStarter(interfaceRunnable, howManyThreads);
         ThreadSleaper.threadSleeper(2000);
 
-        System.out.println("Concurrent NOT save (expected " + counter * numbThreads + "): " + list1.size());
-        System.out.println("Concurrent save (expected " + counter * numbThreads + "): " + list.size());
+        System.out.println("Concurrent NOT save (expected " + counter * howManyThreads + "): " + list1.size());
+        System.out.println("Concurrent save (expected " + counter * howManyThreads + "): " + list.size());
     }
 
-    public static void semaforPresentation(Presentations name) {
+    private static void semaforPresentation(Presentations name) {
         int treadsNumber = 9;
         Thread[] threads = new Thread[treadsNumber];
         if (name.getDescription().equals("semafor")) {
@@ -146,6 +144,32 @@ public class Main {
         for (int i = 0; i < numberOfThreads; i++) {
             resultArray[i] = new Thread(runnable);
             resultArray[i].start();
+        }
+    }
+
+    public static void concurrentPresenttion(Presentations name, int numberOfThreads) {
+        switch (name) {
+            case LIST:
+                listPresentation(numberOfThreads);
+                break;
+            case MAP:
+                mapPresentation(numberOfThreads);
+                break;
+            case LOCK:
+                lockPresentation(numberOfThreads);
+                break;
+            case SEMAFOR:
+                semaforPresentation(Presentations.SEMAFOR);
+                break;
+            case BARIER:
+                semaforPresentation(Presentations.BARIER);
+                break;
+            case PHASER:
+                semaforPresentation(Presentations.PHASER);
+                break;
+            case INTEGER:
+                atomicIntPresentation(numberOfThreads);
+                break;
         }
     }
 

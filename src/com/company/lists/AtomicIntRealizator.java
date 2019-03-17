@@ -8,17 +8,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AtomicIntRealizator extends ListMapPresenterBuilder {
 
-    ListMapConcurrentClass localInstance = new ListMapConcurrentClass(){
+    ListMapConcurrentClass localInstance = new ListMapConcurrentClass() {
         @Override
         public void run() {
             System.out.println(Thread.currentThread().getName() + "started");
             for (int i = 0; i < counter; i++) {
                 getAtomicInteger().incrementAndGet();
-                setResult(getResult()+1);
+                setResult(getResult() + 1);
             }
             System.out.println(Thread.currentThread().getName() + "finised");
         }
     };
+
     @Override
     public ListMapPresenterBuilder setListNormal(List list) {
         return null;
@@ -54,11 +55,7 @@ public class AtomicIntRealizator extends ListMapPresenterBuilder {
 
     @Override
     public ListMapConcurrentClass build() {
-        if (localInstance.getAtomicInteger() != null && localInstance.getResult()
-                != null &&  localInstance.getCounter() !=0 ) {
-            return localInstance;
-        } else {
-            return null;
-        }
+        return localInstance.getAtomicInteger() != null && localInstance.getResult()
+                != null && localInstance.getCounter() != 0 ? localInstance : null;
     }
 }

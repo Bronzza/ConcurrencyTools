@@ -2,7 +2,7 @@ package com.company.singleTones;
 
 public class MySingleTone {
 
-    private static MySingleTone mySingleToneInstance = null;
+    private static volatile MySingleTone mySingleToneInstance = null;
     private String name = "I'm the one";
 
     private MySingleTone() {
@@ -13,12 +13,15 @@ public class MySingleTone {
     }
 
     public static MySingleTone getInstance() {
-        if (mySingleToneInstance != null) {
-            return mySingleToneInstance;
-        } else {
-            return mySingleToneInstance = new MySingleTone();
+        MySingleTone localLnstance = mySingleToneInstance;
+        if (localLnstance == null) {
+            synchronized (MySingleTone.class){
+                localLnstance = mySingleToneInstance;
+                if (localLnstance == null){
+                    mySingleToneInstance = localLnstance = new MySingleTone();
+                }
+            }
         }
+        return localLnstance;
     }
-
 }
-

@@ -8,12 +8,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class ListMapPresenterBuilder {
 
-
     public ListMapPresenterBuilder() {
-//        this.localListMapConcurrentClass.
     }
-
-
 
     public abstract ListMapPresenterBuilder setListNormal(List list);
 
@@ -26,7 +22,6 @@ public abstract class ListMapPresenterBuilder {
     public abstract ListMapPresenterBuilder setAtomicInteger(AtomicInteger atomicInt);
 
     public abstract ListMapPresenterBuilder setCounter(int counter);
-
 
     public abstract ListMapConcurrentClass build();
 }

@@ -54,11 +54,7 @@ public class MapRealisator extends ListMapPresenterBuilder {
 
     @Override
     public ListMapConcurrentClass build() {
-        if (localInstance.getInnerMap() != null && localInstance.getInnerMapSyncronised() != null
-                && localInstance.getCounter() != 0) {
-            return localInstance;
-        } else {
-            return null;
-        }
+        return localInstance.getInnerMap() != null && localInstance.getInnerMapSyncronised() != null
+                && localInstance.getCounter() != 0 ? localInstance : null;
     }
 }
